@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Low Stock Products</title>
+    <style>
+        body { font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        padding: 20px;
+        }
+        .container {
+        max-width: 800px;
+        margin: auto;
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        }
+        h1 {
+        text-align: center;
+        color: #ff0000;
+        }
+        table {
+        width: 100%;
+        border-collapse: collapse;
+        }
+        th, td {
+        padding: 10px;
+        border: 1px solid #ddd;
+        text-align: left;
+        }
+        th {
+        background: #ff0000;
+        color: #fff;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 10px;
+            text-decoration: none;
+            color: #007bff;
+            font-size: 14px;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Low Stock Products</h1>
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Quantity</th>
+                <th>Price</th>
+            </tr>
+            {% for product in products %}
+            <tr>
+                <td>{{ product[0] }}</td>
+                <td>{{ product[1] }}</td>
+                <td>{{ product[2] }}</td>
+                <td>{{ product[3] }}</td>
+                <td>{{ product[4] }}</td>
+            </tr>
+            {% endfor %}
+        </table><br><br>
+        <a class="back-link" href="{{ url_for('home') }}">Back to Inventory</a>
+    </div>
+</body>
+</html>

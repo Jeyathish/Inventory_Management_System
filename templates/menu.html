@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Inventory</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        a {
+            text-decoration: none;
+            background: #007bff;
+            color: #fff;
+            padding: 10px 15px;
+            border-radius: 5px;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        a:hover {
+            background: #0056b3;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background: #007bff;
+            color: #fff;
+        }
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        .actions a {
+            background: #28a745;
+            padding: 5px 10px;
+            border-radius: 3px;
+            color: #fff;
+            margin-right: 5px;
+        }
+        .actions a.delete {
+            background: #dc3545;
+        }
+        .actions a:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+  <form action=http://127.0.0.1:5000/" method="post">
+    <div class="container">
+        <h1>Product Inventory</h1>
+        <center>
+        <a href="{{ url_for('product1') }}">Add New Product</a>
+        <a href="{{ url_for('product4') }}">Manage Suppliers</a>
+        <a href="{{ url_for('product6') }}">Search Products</a>
+        <a href="{{ url_for('product7') }}">Low Stock Alerts</a>
+        </center>
+        <table>
+            <tr>
+                <th>Product ID</th>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Description</th>
+                <th>Actions</th>
+            </tr>
+            {% for product in products %}
+            <tr>
+                <td>{{ product[0] }}</td>
+                <td>{{ product[1] }}</td>
+                <td>{{ product[2] }}</td>
+                <td>{{ product[3] }}</td>
+                <td>{{ product[4] }}</td>
+                <td>{{ product[5] }}</td>
+                <td class="actions">
+                    <a href="{{ url_for('product2', p_id=product[0]) }}">Edit</a>
+                    <a href="{{ url_for('product3', p_id=product[0]) }}" class="delete" onclick="return confirm('Are you sure?')">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+  </form>
+</body>
+</html>
