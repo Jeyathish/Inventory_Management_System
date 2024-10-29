@@ -212,11 +212,126 @@ def product7():
     mydb.close()
     return render_template('lowstock.html', products=low_stock_products)
 
+@app.route('/billing')
+def billing():
+    mydb = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        port="3308",
+        passwd="",
+        database="inventory"
+    )
+    mycursor = mydb.cursor()
+    mycursor.execute("SELECT * FROM billing")
+    invoices = mycursor.fetchall()
+    mycursor.close()
+    mydb.close()
+    return render_template('billing.html', invoices=invoices)
+
+
+@app.route('/create_invoice', methods=['GET', 'POST'])
+def create_invoice():
+    if request.method == 'POST':
+        customer_name = request.form['customer_name']
+        total_amount = request.form['total_amount']
+
+        mydb = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            port="3308",
+            passwd="",
+            database="inventory"
+        )
+        mycursor = mydb.cursor()
+        sql = "INSERT INTO billing (customer_name, total_amount) VALUES (%s, %s)"
+        val = (customer_name, total_amount)
+        mycursor.execute(sql, val)
+        mydb.commit()
+        invoice_id = mycursor.lastrowid  # Get the last inserted invoice ID
+        mycursor.close()
+        mydb.close()
+
+        return redirect(url_for('billing'))  # Redirect to billing page
+
+    return render_template('create_invoice.html')
+
+
+@app.route('/add_items/<int:invoice_id>', methods=['GET', 'POST'])
+def add_items(invoice_id):
+    if request.method == 'POST':
+        product_id = request.form['product_id']
+        quantity_sold = request.form['quantity_sold']
+
+        # Fetch product price
+        mydb = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            port="3308",
+            passwd="",
+            database="inventory"
+        )
+        mycursor = mydb.cursor()
+        mycursor.execute("SELECT price FROM products WHERE p_id = %s", (product_id,))
+        price = mycursor.fetchone()[0]
+
+        # Insert into billing_items table
+        sql = "INSERT INTO billing_items (invoice_id, product_id, quantity_sold, price) VALUES (%s, %s, %s, %s)"
+        val = (invoice_id, product_id, quantity_sold, price)
+        mycursor.execute(sql, val)
+
+        # Update product quantity in inventory
+        mycursor.execute("UPDATE products SET quantity = quantity - %s WHERE p_id = %s", (quantity_sold, product_id))
+
+        mydb.commit()
+        mycursor.close()
+        mydb.close()
+
+        return redirect(url_for('billing'))
+
+    # Fetch products for the dropdown
+    mydb = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        port="3308",
+        passwd="",
+        database="inventory"
+    )
+    mycursor = mydb.cursor()
+    mycursor.execute("SELECT p_id, name FROM products")
+    products = mycursor.fetchall()
+    mycursor.close()
+    mydb.close()
+
+    return render_template('add_items.html', invoice_id=invoice_id, products=products)
+
+
+@app.route('/pay_invoice/<int:invoice_id>', methods=['POST'])
+def pay_invoice(invoice_id):
+    mydb = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        port="3308",
+        passwd="",
+        database="inventory"
+    )
+
+    mycursor = mydb.cursor()
+
+    # Update the payment status to 'Paid'
+    sql = "UPDATE billing SET payment_status = 'Paid' WHERE invoice_id = %s"
+    mycursor.execute(sql, (invoice_id,))  # Using the invoice_id parameter directly
+    mydb.commit()
+
+    mycursor.close()
+    mydb.close()
+
+    return redirect(url_for('billing'))
+
+
 
 @app.route("/")
 def salvador():
     return "Hello, Friends"
-
 
 if __name__ == "__main__":
     app.run(debug=True)
