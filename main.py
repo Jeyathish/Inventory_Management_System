@@ -83,7 +83,7 @@ def product2(p_id):
         val = (name, category, quantity, price, description, p_id)
         mycursor.execute(sql, val)
         mydb.commit()
-        mycursor.close()
+        mycursor.close()    
         mydb.close()
 
         return redirect(url_for('home'))  # Redirect to the home page after updating
@@ -327,7 +327,77 @@ def pay_invoice(invoice_id):
 
     return redirect(url_for('billing'))
 
+@app.route("/sampleadd")
+def add1():
+    return render_template("sampleadd.html")
 
+@app.route('/sampleadd', methods=['POST'])
+def add():
+    name = request.form['name']
+    regno = request.form['regno']
+
+    mydb = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        port="3308",
+        passwd="",
+        database="inventory",
+        use_unicode=True,
+        charset='ascii'
+    )
+    mycursor = mydb.cursor()
+    sql = "INSERT INTO add1 (name, regno) VALUES (%s, %s)"
+    values = (name, regno)
+    mycursor.execute(sql, values)
+    mydb.commit()
+    mycursor.close()
+    mydb.close()
+
+    return redirect(url_for('home'))
+
+@app.route("/sampleupdate")
+def update1():
+    return render_template("sampleupdate.html")
+
+@app.route('/sampleupdate/<int:regno>', methods=['GET', 'POST'])
+def update(regno):
+    name = request.form['name']
+    regno = request.form['regno']
+
+    mydb = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        port="3308",
+        passwd="",
+        database="inventory",
+        use_unicode=True,
+        charset='ascii'
+    )
+    if request.method == 'POST':
+        mycursor = mydb.cursor()
+        sql = "Update INTO add1 set name=%s, regno=%s "
+        values = (name, regno)
+        mycursor.execute(sql, values)
+        mydb.commit()
+        mycursor.close()
+        mydb.close()
+
+        return redirect(url_for('home'))
+
+    else:
+        # Fetch product details for the given ID
+        sql = "SELECT * FROM add1 WHERE regno = %s"
+        mycursor.execute(sql, (regno,))
+        regno1 = mycursor.fetchone()
+        mycursor.close()
+        mydb.close()
+
+        # Check if the product exists
+        if regno1 is None:
+            return "Name not found", 404
+
+        # Render the template with product details
+        return render_template('sampleupdate.html', product=regno1)
 
 @app.route("/")
 def salvador():
